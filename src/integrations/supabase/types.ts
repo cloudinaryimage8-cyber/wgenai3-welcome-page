@@ -19,22 +19,28 @@ export type Database = {
           created_at: string
           html_content: string
           id: string
+          is_public: boolean
           name: string
           updated_at: string
+          user_id: string | null
         }
         Insert: {
           created_at?: string
           html_content?: string
           id?: string
+          is_public?: boolean
           name: string
           updated_at?: string
+          user_id?: string | null
         }
         Update: {
           created_at?: string
           html_content?: string
           id?: string
+          is_public?: boolean
           name?: string
           updated_at?: string
+          user_id?: string | null
         }
         Relationships: []
       }
