@@ -6,14 +6,16 @@
 import weddingMock from "../db/data/wedding.json";
 import engagementMock from "../db/data/engagement.json";
 import biodataMock from "../db/data/biodata.json";
+import cardsMock from "../db/data/cards.json";
 
 export const MOCK_DATA = {
   wedding: weddingMock,
   engagement: engagementMock,
   biodata: biodataMock,
+  cards: cardsMock,
 };
 
-export const DATASETS = ["wedding", "engagement", "biodata"];
+export const DATASETS = ["wedding", "engagement", "biodata", "cards"];
 
 export const STORAGE_PREFIX = "wgen:";
 export const storageKey = (name) => `${STORAGE_PREFIX}${name}`;
