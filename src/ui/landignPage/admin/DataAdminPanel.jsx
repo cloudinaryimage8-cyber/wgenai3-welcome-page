@@ -17,11 +17,58 @@ export default function DataAdminPanel() {
   const { datasets, data, seedFromMock, reset } = useData();
   const [openKey, setOpenKey] = useState(null);
   const [toast, setToast] = useState("");
+  const fileInputRef = React.useRef(null);
 
   const flash = (msg) => {
     setToast(msg);
     window.clearTimeout(flash._t);
     flash._t = window.setTimeout(() => setToast(""), 1800);
+  };
+
+  const handleExport = () => {
+    const payload = {};
+    datasets.forEach((n) => { payload[n] = data[n]; });
+    const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `wgen-storage-${new Date().toISOString().slice(0, 10)}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+    flash("Exported storage JSON");
+  };
+
+  const handleImport = (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      try {
+        const parsed = JSON.parse(String(reader.result));
+        let count = 0;
+        datasets.forEach((n) => {
+          if (parsed[n] != null) {
+            localStorage.setItem(`wgen:${n}`, JSON.stringify(parsed[n]));
+            count++;
+          }
+        });
+        flash(`Imported ${count} dataset(s). Reloading…`);
+        setTimeout(() => window.location.reload(), 600);
+      } catch (err) {
+        flash("Invalid JSON file");
+      }
+    };
+    reader.readAsText(file);
+    e.target.value = "";
+  };
+
+  const handleClearAll = () => {
+    if (!window.confirm("Clear ALL localStorage for this app? Data will re-seed from mock on next load.")) return;
+    datasets.forEach((n) => {
+      try { localStorage.removeItem(`wgen:${n}`); } catch { /* ignore */ }
+    });
+    flash("Cleared. Reloading…");
+    setTimeout(() => window.location.reload(), 500);
   };
 
   return (
@@ -34,7 +81,7 @@ export default function DataAdminPanel() {
             from mock JSON files in <code>src/db/data/</code>.
           </p>
         </div>
-        <div className="flex gap-2">
+        <div className="flex flex-wrap gap-2">
           <button
             onClick={() => { seedFromMock(); flash("All datasets seeded from mock"); }}
             className="px-4 py-2 rounded-lg bg-blue-600 text-white font-semibold hover:bg-blue-700"
@@ -43,9 +90,34 @@ export default function DataAdminPanel() {
           </button>
           <button
             onClick={() => { reset(); flash("All datasets reset"); }}
-            className="px-4 py-2 rounded-lg bg-red-600 text-white font-semibold hover:bg-red-700"
+            className="px-4 py-2 rounded-lg bg-amber-600 text-white font-semibold hover:bg-amber-700"
           >
             Reset All
+          </button>
+          <button
+            onClick={handleExport}
+            className="px-4 py-2 rounded-lg bg-emerald-600 text-white font-semibold hover:bg-emerald-700"
+          >
+            Export JSON
+          </button>
+          <button
+            onClick={() => fileInputRef.current?.click()}
+            className="px-4 py-2 rounded-lg bg-indigo-600 text-white font-semibold hover:bg-indigo-700"
+          >
+            Import JSON
+          </button>
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept="application/json"
+            className="hidden"
+            onChange={handleImport}
+          />
+          <button
+            onClick={handleClearAll}
+            className="px-4 py-2 rounded-lg bg-red-600 text-white font-semibold hover:bg-red-700"
+          >
+            Clear Storage
           </button>
         </div>
       </div>

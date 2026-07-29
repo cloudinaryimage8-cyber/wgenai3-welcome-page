@@ -165,28 +165,33 @@ export default function CardsPage() {
 }
 
 function CardGrid({ items, onOpen }) {
+  const navigate = useNavigate();
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
       {items.map((card) => (
-        <button
+        <div
           key={card.id}
-          onClick={() => onOpen(card)}
-          className="group text-left relative rounded-3xl overflow-hidden bg-white/5 border border-white/10 hover:border-fuchsia-400/40 transition-all hover:-translate-y-1 hover:shadow-2xl hover:shadow-fuchsia-500/10"
+          className="group relative rounded-3xl overflow-hidden bg-white/5 border border-white/10 hover:border-fuchsia-400/40 transition-all hover:-translate-y-1 hover:shadow-2xl hover:shadow-fuchsia-500/10"
         >
-          <div className="relative aspect-[4/5] overflow-hidden">
-            <img
-              src={card.img}
-              alt={card.title}
-              className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
-              loading="lazy"
-            />
-            <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/30 to-transparent" />
-            {card.tag && (
-              <span className="absolute top-3 left-3 px-3 py-1 rounded-full text-xs font-bold bg-gradient-to-r from-amber-400 to-pink-500 shadow-lg">
-                {card.tag}
-              </span>
-            )}
-          </div>
+          <button
+            onClick={() => onOpen(card)}
+            className="block w-full text-left"
+          >
+            <div className="relative aspect-[4/5] overflow-hidden">
+              <img
+                src={card.img}
+                alt={card.title}
+                className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+                loading="lazy"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/30 to-transparent" />
+              {card.tag && (
+                <span className="absolute top-3 left-3 px-3 py-1 rounded-full text-xs font-bold bg-gradient-to-r from-amber-400 to-pink-500 shadow-lg">
+                  {card.tag}
+                </span>
+              )}
+            </div>
+          </button>
           <div className="p-4">
             <h4 className="font-bold text-lg mb-1 truncate">{card.title}</h4>
             <div className="flex items-center justify-between">
@@ -195,17 +200,29 @@ function CardGrid({ items, onOpen }) {
               </div>
               <span className="font-bold text-fuchsia-300">{card.price}</span>
             </div>
-            <div className="mt-4 w-full py-2.5 rounded-xl bg-gradient-to-r from-fuchsia-500 to-pink-500 group-hover:from-fuchsia-400 group-hover:to-pink-400 font-semibold text-sm text-center transition">
-              View Details
+            <div className="mt-4 grid grid-cols-2 gap-2">
+              <button
+                onClick={() => onOpen(card)}
+                className="py-2.5 rounded-xl bg-white/10 hover:bg-white/20 border border-white/10 font-semibold text-sm transition"
+              >
+                View Details
+              </button>
+              <button
+                onClick={() => navigate(`/invitation/${card.invitationId || "default"}`)}
+                className="py-2.5 rounded-xl bg-gradient-to-r from-fuchsia-500 to-pink-500 hover:from-fuchsia-400 hover:to-pink-400 font-semibold text-sm transition"
+              >
+                View Invitation
+              </button>
             </div>
           </div>
-        </button>
+        </div>
       ))}
     </div>
   );
 }
 
 function CardDetailModal({ card, onClose }) {
+  const navigate = useNavigate();
   return (
     <div
       className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm"
@@ -284,8 +301,11 @@ function CardDetailModal({ card, onClose }) {
             )}
 
             <div className="flex gap-3">
-              <button className="flex-1 py-3 rounded-xl bg-gradient-to-r from-fuchsia-500 to-pink-500 hover:from-fuchsia-400 hover:to-pink-400 font-semibold transition">
-                Customize
+              <button
+                onClick={() => { onClose(); navigate(`/invitation/${card.invitationId || "default"}`); }}
+                className="flex-1 py-3 rounded-xl bg-gradient-to-r from-fuchsia-500 to-pink-500 hover:from-fuchsia-400 hover:to-pink-400 font-semibold transition"
+              >
+                View Invitation
               </button>
               <button
                 onClick={onClose}
