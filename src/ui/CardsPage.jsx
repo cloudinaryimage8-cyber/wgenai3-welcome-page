@@ -301,8 +301,11 @@ function CardDetailModal({ card, onClose }) {
             )}
 
             <div className="flex gap-3">
-              <button className="flex-1 py-3 rounded-xl bg-gradient-to-r from-fuchsia-500 to-pink-500 hover:from-fuchsia-400 hover:to-pink-400 font-semibold transition">
-                Customize
+              <button
+                onClick={() => { onClose(); navigate(`/invitation/${card.invitationId || "default"}`); }}
+                className="flex-1 py-3 rounded-xl bg-gradient-to-r from-fuchsia-500 to-pink-500 hover:from-fuchsia-400 hover:to-pink-400 font-semibold transition"
+              >
+                View Invitation
               </button>
               <button
                 onClick={onClose}
