@@ -17,6 +17,7 @@ import { getBlockType } from "../registry/blockTypeRegistry";
 import { getSectionType, listSectionTypeIds } from "../registry/sectionTypeRegistry";
 import { validateContent } from "../validators/contentValidator";
 import { localizeContent } from "../localization/localizationService";
+import { sortSections } from "../serializers/sortUtils";
 
 /* ------------------------------ normalize ------------------------------ */
 
@@ -76,12 +77,7 @@ export function normalizeContent(raw, options = {}) {
 
 /* -------------------------------- sort --------------------------------- */
 
-export function sortSections(sections = []) {
-  return [...sections]
-    .map((s, i) => ({ s, i }))
-    .sort((a, b) => (a.s.order ?? a.i) - (b.s.order ?? b.i) || a.i - b.i)
-    .map(({ s }, i) => (s.order === i ? s : { ...s, order: i }));
-}
+export { sortSections };
 
 /* ------------------------------- resolve -------------------------------- */
 
