@@ -8,6 +8,8 @@ import { evaluateRules, canRenderSection, PUBLISH_STATE } from "../../lib/rules"
 import { listSectionIds } from "../../ui/invitation/sectionRegistry";
 import { toInvitationView } from "../../domain/event";
 import { resolveTheme } from "../theme/ThemeService";
+import { prepareContent } from "../cms/ContentService";
+
 
 /**
  * @returns {{
