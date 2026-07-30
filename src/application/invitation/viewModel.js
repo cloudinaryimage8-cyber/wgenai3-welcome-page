@@ -8,6 +8,8 @@ import { evaluateRules, canRenderSection, PUBLISH_STATE } from "../../lib/rules"
 import { listSectionIds } from "../../ui/invitation/sectionRegistry";
 import { toInvitationView } from "../../domain/event";
 import { resolveTheme } from "../theme/ThemeService";
+import { prepareContent } from "../cms/ContentService";
+
 
 /**
  * @returns {{
@@ -35,10 +37,27 @@ export function buildInvitationViewModel(event, options = {}) {
       ? invitation.config.sections
       : listSectionIds();
 
-  const sections = order.filter((id) => canRenderSection(id, rules));
+  // CMS engine: the event is projected into a content document, then resolved
+  // into normalized section data. The renderer consumes ONLY this output.
+  const content = prepareContent(invitation, {
+    content: options.content,
+    sectionTypes: order,
+    locale: options.locale,
+    eventId: event.id,
+  });
+
+  const sections = content.order.filter((id) => canRenderSection(id, rules));
 
   return {
-    invitation: { ...invitation, themeId, config: { ...invitation.config, sections: order } },
+    invitation: {
+      ...invitation,
+      ...content.data,
+      themeId,
+      config: { ...invitation.config, sections: content.order },
+    },
+    content: content.document,
+    contentSections: content.sections,
+    contentIssues: content.issues,
     theme,
     themeId,
     rules,
@@ -55,3 +74,4 @@ export function buildInvitationViewModel(event, options = {}) {
     },
   };
 }
+
